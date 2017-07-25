@@ -5,7 +5,7 @@
 var mongoose = require('mongoose'),
 	Schema = mongoose.Schema,
 	ObjectId = Schema.ObjectId,
-	elmongo = require('../lib/elmongo')
+	elmongo = require('../lib/elmongoose')
 
 /**
 * Model definition
@@ -46,9 +46,9 @@ var Hetero = new Schema({
 })
 
 // add elmongo plugin to each schema
-Cat.plugin(elmongo)
-Person.plugin(elmongo)
-Hetero.plugin(elmongo)
+Cat.plugin(elmongo, { port: 9200 });
+Person.plugin(elmongo, { port: 9200 });
+Hetero.plugin(elmongo, { port: 9200 });
 
 // exports
 exports.Cat = mongoose.model('Cat', Cat)

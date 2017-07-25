@@ -17,6 +17,7 @@ var assert = require('assert'),
  */
 exports.refresh = function (cb) {
 	request.post('http://localhost:9200/_refresh', function (err, res, body) {
+		console.log(body);
 		assert.equal(err, null)
 		var parsedBody = JSON.parse(body)
 		assert.equal(helpers.elasticsearchBodyOk(parsedBody), true)
@@ -50,10 +51,8 @@ exports.deleteIndices = function (cb) {
 }
 
 exports.waitForYellowStatus = function (cb) {
-	console.log('waiting for yellow cluster status')
 	request('http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=50s', function (err, res, body) {
-		// console.log('yellow status body', body)
-		assert.equal(err, null)
+		assert.equal(err, null);
 		return cb()
 	})
 }
@@ -75,6 +74,7 @@ exports.assertErrNull = function (err) {
  * @param  {Function} cb
  */
 exports.saveDocs = function (docs, cb) {
+
 	if (!Array.isArray(docs)) {
 		docs = [ docs ]
 	}
@@ -84,7 +84,8 @@ exports.saveDocs = function (docs, cb) {
 			return docNext(new Error('Invalid argument: `docs` is expected to be a Mongoose document, or array of them'))
 		}
 
-		doc.once('elmongo-indexed', function (esearchBody) {
+		doc.once('elmongoose-indexed', function (esearchBody) {
+		  console.log(esearchBody);
 			var bodyOk = helpers.elasticsearchBodyOk(esearchBody)
 			if (!bodyOk) {
 				var error = new Error('elmongo-index error: '+util.inspect(esearchBody, true, 10, true))
@@ -94,7 +95,7 @@ exports.saveDocs = function (docs, cb) {
 			}
 
 			return docNext()
-		})
+		});
 
 		doc.save(function (err) {
 			if (err) {

@@ -10,7 +10,7 @@ var mongoose = require('mongoose'),
 	mongodb = require('mongodb'),
 	ObjectID = mongodb.ObjectID,
 	util = require('util'),
-	elmongo = require('../lib/elmongo'),
+	elmongo = require('../lib/elmongoose'),
 	helpers = require('../lib/helpers'),
 	testHelper = require('./testHelper')
 
@@ -24,6 +24,9 @@ var connStr = 'mongodb://localhost/elmongo-test'
 describe('elmongo load tests', function () {
 
 	before(function (done) {
+
+		console.log('here');
+
 		async.series({
 			connectMongo: function (next) {
 				mongoose.connect(connStr, next)
@@ -40,6 +43,7 @@ describe('elmongo load tests', function () {
 					assert(body)
 
 					var parsedBody = JSON.parse(body)
+					console.log(parsedBody);
 					assert.equal(helpers.elasticsearchBodyOk(parsedBody), true)
 					assert.equal(parsedBody.status, 200)
 
