@@ -20,7 +20,7 @@ var Cat = new Schema({
 	nicknames: [ { type: String, autocomplete: true } ],
 	friends: [ { type: ObjectId, ref: 'Cat' } ],
 	isHappy: { type: Boolean }
-})
+});
 
 var Person = new Schema({
 	name: { type: String },
@@ -51,11 +51,11 @@ Person.plugin(elmongo, { port: 9200 });
 Hetero.plugin(elmongo, { port: 9200 });
 
 // exports
-exports.Cat = mongoose.model('Cat', Cat)
-exports.CatSchema = Cat
+exports.Cat = mongoose.model('Cat', Cat);
+exports.CatSchema = Cat;
 
-exports.Person = mongoose.model('Person', Person)
-exports.PersonSchema = Person
+exports.Person = mongoose.model('Person', Person);
+exports.PersonSchema = Person;
 
-exports.Hetero = mongoose.model('Hetero', Hetero)
-exports.HeteroSchema = Hetero
+exports.Hetero = mongoose.model('Hetero', Hetero);
+exports.HeteroSchema = Hetero;

@@ -67,7 +67,7 @@ describe('elmongoose plugin', function () {
 					name: 'Zing Doodle',
 					breed: 'savannah',
 					age: 20
-				})
+				});
 
 				testHelper.saveDocs(testCats, next)
 			},

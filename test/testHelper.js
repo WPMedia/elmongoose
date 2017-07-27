@@ -17,7 +17,6 @@ var assert = require('assert'),
  */
 exports.refresh = function (cb) {
 	request.post('http://localhost:9200/_refresh', function (err, res, body) {
-		console.log(body);
 		assert.equal(err, null)
 		var parsedBody = JSON.parse(body)
 		assert.equal(helpers.elasticsearchBodyOk(parsedBody), true)
@@ -26,21 +25,22 @@ exports.refresh = function (cb) {
 }
 
 exports.deleteIndices = function (cb) {
-	var indicesToDelete = [ 'Cat', 'Person' ].map(function (key) {
+	var indicesToDelete = [ 'Cat', 'Person', 'Cats' ].map(function (key) {
 		var model = models[key];
 
-		return model.collection.name.toLowerCase()
-	})
+		if (typeof model === 'undefined') {
+			return key.toLowerCase();
+		}
 
-	var deleteUri = 'http://localhost:9200/'+indicesToDelete.join(',')
+		return model.collection.name.toLowerCase();
+	});
 
-	// console.log('deleteUri', deleteUri)
-
+	var deleteUri = 'http://localhost:9200/_all';
 	var reqOpts = {
 	    method: 'DELETE',
 	    json: true,
 	    url: deleteUri
-	}
+	};
 
 	request(reqOpts, function (err, res, body) {
 	    assert.equal(err, null)
@@ -85,12 +85,10 @@ exports.saveDocs = function (docs, cb) {
 		}
 
 		doc.once('elmongoose-indexed', function (esearchBody) {
-		  console.log(esearchBody);
-			var bodyOk = helpers.elasticsearchBodyOk(esearchBody)
+			var bodyOk = helpers.elasticsearchBodyOk(esearchBody);
 			if (!bodyOk) {
-				var error = new Error('elmongo-index error: '+util.inspect(esearchBody, true, 10, true))
-				error.esearchBody = esearchBody
-
+				var error = new Error('elmongo-index error: ' + util.inspect(esearchBody, true, 10, true));
+				error.esearchBody = esearchBody;
 				return docNext(error)
 			}
 
@@ -149,17 +147,17 @@ exports.removeDocs = function (docs, cb) {
  * @param  {Function} cb
  */
 exports.insertNDocs = function (n, model, cb) {
-	var modelsToSave = []
+	var modelsToSave = [];
 
 	for (var i = 0; i < n; i++) {
 		var instance = new model({
 			name: 'model '+i
-		})
+		});
 
-		modelsToSave.push(instance)
+		modelsToSave.push(instance);
 	}
 
-	exports.saveDocs(modelsToSave, cb)
+	exports.saveDocs(modelsToSave, cb);
 }
 
 /**
