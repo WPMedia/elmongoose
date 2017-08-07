@@ -7,9 +7,11 @@ var assert = require('assert'),
 	mongoose = require('mongoose'),
 	ObjectID = mongodb.ObjectID,
 	mongoClient = mongodb.MongoClient,
-	request = require('request')
+	logger = require('../lib/logger'),
+  constants = require('../lib/constants');
+	request = require('request');
 
-var connStr = 'mongodb://localhost/elmongo-test'
+var connStr = `mongodb://localhost/${constants.APP_NAME}-test`;
 
 /**
  *
@@ -31,14 +33,14 @@ describe('Model.sync()', function () {
 
 					var parsedBody = JSON.parse(body)
 					assert.equal(helpers.elasticsearchBodyOk(parsedBody), true)
-					assert.equal(parsedBody.status, 200)
+					assert.equal(res.statusCode, 200);
 
 					return next()
 				})
 			},
 			clearCatIndex: function (next) {
 				request.del('http://localhost:9200/cats', function (err, res, body) {
-					testHelper.assertErrNull(err)
+					testHelper.assertErrNull(err);
 
 					assert(body)
 
@@ -69,21 +71,18 @@ describe('Model.sync()', function () {
 	})
 
 	it('inserting a `cat` model directly using mongodb driver should show up in Model.search() after Model.sync() is called', function (done) {
-
-		var catObj = {
+		const catObj = {
 			name: 'nomnom',
 			_id: new ObjectID()
 		}
-
-		var db = null
+		var db = null;
 
 		async.series({
 			connectMongo: function (next) {
 				mongoClient.connect(connStr, function (err, connectedDb) {
-					assert.equal(err, null)
-
-					db = connectedDb
-					return next()
+					assert.equal(err, null);
+					db = connectedDb;
+					return next();
 				})
 			},
 			insertCat: function (next) {
@@ -94,14 +93,14 @@ describe('Model.sync()', function () {
 			},
 			// refresh: exports.refresh,
 			searchCat: function (next) {
-				models.Cat.search({ query: 'nomnom' }, function (err, results) {
-					testHelper.assertErrNull(err)
+				models.Cat.search({ matchAll: [''] }, function (err, results) {
+				  logger.info('results', results);
+					testHelper.assertErrNull(err);
+					assert(results);
+					assert.equal(results.total, 1);
+					assert.equal(results.hits.length, 1);
 
-					assert(results)
-					assert.equal(results.total, 1)
-					assert.equal(results.hits.length, 1)
-
-					var firstResult = results.hits[0]
+					var firstResult = results.hits[0];
 
 					assert(firstResult)
 					assert.equal(firstResult._source.name, 'nomnom')

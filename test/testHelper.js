@@ -8,7 +8,9 @@ var assert = require('assert'),
 	request = require('request'),
 	async = require('async'),
 	models = require('./models'),
-	helpers = require('../lib/helpers')
+	logger = require('../lib/logger'),
+	constants = require('../lib/constants');
+	helpers = require('../lib/helpers');
 
 /**
  * Force a refresh on all indices so we an expect elasticsearch to be up-to-date
@@ -17,7 +19,7 @@ var assert = require('assert'),
  */
 exports.refresh = function (cb) {
 	request.post('http://localhost:9200/_refresh', function (err, res, body) {
-		assert.equal(err, null)
+		assert.equal(err, null);
 		var parsedBody = JSON.parse(body)
 		assert.equal(helpers.elasticsearchBodyOk(parsedBody), true)
 		return cb()
@@ -84,7 +86,7 @@ exports.saveDocs = function (docs, cb) {
 			return docNext(new Error('Invalid argument: `docs` is expected to be a Mongoose document, or array of them'))
 		}
 
-		doc.once('elmongoose-indexed', function (esearchBody) {
+		doc.once(constants.INDEXED, function (esearchBody) {
 			var bodyOk = helpers.elasticsearchBodyOk(esearchBody);
 			if (!bodyOk) {
 				var error = new Error('elmongo-index error: ' + util.inspect(esearchBody, true, 10, true));
@@ -119,7 +121,7 @@ exports.removeDocs = function (docs, cb) {
 			return docNext(new Error('Invalid argument: `docs` is expected to be a Mongoose document, or array of them'))
 		}
 
-		doc.once('elmongo-unindexed', function (esearchBody) {
+		doc.once(constants.UNINDEXED, function (esearchBody) {
 			var bodyOk = helpers.elasticsearchBodyOk(esearchBody)
 
 			if (!bodyOk) {
@@ -186,9 +188,8 @@ exports.dropCollections = function (cb) {
 				var numDeleted = 0
 
 				documents.forEach(function (doc) {
-					doc.once('elmongo-unindexed', function (esearchBody) {
-						numDeleted++
-
+					doc.once(constants.UNINDEXED, function (esearchBody) {
+						numDeleted++;
 						if (numDeleted === numDocs) {
 							return modelNext()
 						}
