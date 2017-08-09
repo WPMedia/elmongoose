@@ -10,9 +10,9 @@
     "mongo"
   ],
   "dependencies": {
+    "async": "0.2.9",
     "mongoose": "3.6.11",
-    "request": "2.25.0",
-    "async": "0.2.9"
+    "request": "2.25.0"
   },
   "devDependencies": {
     "eslint": "^4.3.0",
@@ -23,7 +23,7 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "mocha": "1.8.1",
+    "mocha": "^3.5.0",
     "mongodb": "^2.2.30",
     "winston": "^2.3.1"
   },
@@ -36,6 +36,6 @@
     "url": "http://github.com/styonsk/elmongoose.git"
   },
   "scripts": {
-    "test": "./node_modules/.bin/mocha -t 90000 -R spec"
+    "test": "./node_modules/.bin/mocha --inspect -t 90000 -R spec"
   }
 }
