@@ -10,7 +10,7 @@
     "mongo"
   ],
   "dependencies": {
-    "mongoose": "3.6.11",
+    "mongoose": "5.10.4",
     "request": "2.25.0",
     "async": "0.2.9"
   },
