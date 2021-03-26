@@ -1,3 +1,5 @@
+**This repo is archived in favor of https://github.com/WPMedia/storytools-elmongoose.**
+
 # ElMongoose
 Elmongoose allows you to sync your MongooseJS models with Elastic Search
 
